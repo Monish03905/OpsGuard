@@ -1,0 +1,254 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 96%;
+    --foreground: 0 0% 5%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 5%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 5%;
+
+    --primary: 0 0% 5%;
+    --primary-foreground: 0 0% 96%;
+
+    --secondary: 0 0% 90%;
+    --secondary-foreground: 0 0% 5%;
+
+    --muted: 0 0% 92%;
+    --muted-foreground: 0 0% 40%;
+
+    --accent: 0 72% 51%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --warning: 45 93% 47%;
+    --warning-foreground: 0 0% 5%;
+
+    --success: 142 72% 29%;
+    --success-foreground: 0 0% 100%;
+
+    --border: 0 0% 78%;
+    --input: 0 0% 78%;
+    --ring: 0 0% 5%;
+
+    --radius: 0px;
+
+    --sidebar-background: 0 0% 100%;
+    --sidebar-shadow: 2px 0 0 0 hsl(0 0% 5%);
+    --sidebar-foreground: 0 0% 5%;
+    --sidebar-primary: 0 0% 5%;
+    --sidebar-primary-foreground: 0 0% 96%;
+    --sidebar-accent: 0 0% 92%;
+    --sidebar-accent-foreground: 0 0% 5%;
+    --sidebar-border: 0 0% 5%;
+    --sidebar-ring: 0 0% 5%;
+
+    --font-display: 'Space Mono', monospace;
+    --font-body: 'Space Grotesk', sans-serif;
+
+    --chart-1: 0 72% 51%;
+    --chart-2: 220 14% 50%;
+    --chart-3: 142 72% 29%;
+    --chart-4: 45 93% 47%;
+    --chart-5: 0 0% 30%;
+
+    --shadow-2xs: none;
+    --shadow-xs: none;
+    --shadow-sm: none;
+    --shadow: none;
+    --shadow-md: none;
+    --shadow-lg: none;
+    --shadow-xl: none;
+    --shadow-2xl: none;
+  }
+
+  .dark {
+    --background: 0 0% 6%;
+    --foreground: 0 0% 92%;
+
+    --card: 0 0% 10%;
+    --card-foreground: 0 0% 92%;
+
+    --popover: 0 0% 10%;
+    --popover-foreground: 0 0% 92%;
+
+    --primary: 0 0% 92%;
+    --primary-foreground: 0 0% 6%;
+
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 0 0% 92%;
+
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 55%;
+
+    --accent: 0 72% 51%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --warning: 45 93% 47%;
+    --warning-foreground: 0 0% 5%;
+
+    --success: 142 72% 40%;
+    --success-foreground: 0 0% 100%;
+
+    --border: 0 0% 22%;
+    --input: 0 0% 22%;
+    --ring: 0 0% 92%;
+
+    --sidebar-background: 0 0% 8%;
+    --sidebar-shadow: 2px 0 0 0 hsl(0 0% 22%);
+    --sidebar-foreground: 0 0% 92%;
+    --sidebar-primary: 0 72% 51%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 15%;
+    --sidebar-accent-foreground: 0 0% 92%;
+    --sidebar-border: 0 0% 22%;
+    --sidebar-ring: 0 0% 92%;
+
+    --chart-1: 0 72% 51%;
+    --chart-2: 220 14% 60%;
+    --chart-3: 142 72% 40%;
+    --chart-4: 45 93% 55%;
+    --chart-5: 0 0% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-body);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+
+  code, .font-mono {
+    font-family: var(--font-display);
+  }
+}
+
+@layer components {
+  .stat-number {
+    font-family: var(--font-display);
+    @apply font-bold tracking-tight;
+  }
+
+  .status-pulse {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* Brutalist accents */
+  .brutal-border {
+    border: 2px solid hsl(var(--foreground));
+  }
+
+  .brutal-shadow {
+    box-shadow: 4px 4px 0 0 hsl(var(--foreground));
+  }
+
+  .brutal-shadow-sm {
+    box-shadow: 2px 2px 0 0 hsl(var(--foreground));
+  }
+
+  .brutal-hover {
+    transition: transform 0.12s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.12s cubic-bezier(0.2, 0, 0, 1);
+  }
+  .brutal-hover:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 6px 6px 0 0 hsl(var(--foreground));
+  }
+  .brutal-hover:active {
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0 0 hsl(var(--foreground));
+  }
+
+  .brutal-hover-accent {
+    transition: transform 0.12s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.12s cubic-bezier(0.2, 0, 0, 1), border-color 0.12s ease;
+  }
+  .brutal-hover-accent:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 6px 6px 0 0 hsl(var(--accent));
+    border-color: hsl(var(--accent));
+  }
+  .brutal-hover-accent:active {
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0 0 hsl(var(--accent));
+  }
+
+  .brutal-lift {
+    transition: transform 0.12s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.12s cubic-bezier(0.2, 0, 0, 1);
+    box-shadow: 2px 2px 0 0 hsl(var(--foreground));
+  }
+  .brutal-lift:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 0 0 hsl(var(--foreground));
+  }
+  .brutal-lift:active {
+    transform: translate(0px, 0px);
+    box-shadow: 0px 0px 0 0 hsl(var(--foreground));
+  }
+
+  .accent-stripe {
+    background: repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 4px,
+      hsl(var(--accent) / 0.08) 4px,
+      hsl(var(--accent) / 0.08) 8px
+    );
+  }
+
+  /* Glitch text effect on hover */
+  .brutal-glitch:hover {
+    animation: glitch 0.3s ease-in-out;
+  }
+
+  @keyframes glitch {
+    0%, 100% { transform: translate(0); }
+    20% { transform: translate(-2px, 1px); }
+    40% { transform: translate(2px, -1px); }
+    60% { transform: translate(-1px, -1px); }
+    80% { transform: translate(1px, 1px); }
+  }
+
+  /* Brutal underline link */
+  .brutal-link {
+    position: relative;
+    text-decoration: none;
+  }
+  .brutal-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 3px;
+    background: hsl(var(--accent));
+    transition: width 0.2s cubic-bezier(0.2, 0, 0, 1);
+  }
+  .brutal-link:hover::after {
+    width: 100%;
+  }
+}

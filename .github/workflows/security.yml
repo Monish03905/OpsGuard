@@ -1,0 +1,192 @@
+name: Security
+
+on:
+  pull_request:
+    branches: ["**"]
+  push:
+    branches: [main, master]
+  schedule:
+    # Weekly re-scan so newly published advisories surface even without a PR.
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+# Least privilege: nothing here needs write access.
+permissions:
+  contents: read
+
+concurrency:
+  group: security-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # 1. Known-vulnerable dependencies
+  # ---------------------------------------------------------------------------
+  dependency-audit:
+    name: Dependency audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Audit for high and critical advisories
+        run: |
+          npm audit \
+            --audit-level=high \
+            --registry=https://registry.npmjs.org \
+            --omit=dev
+
+      - name: Report dev-only advisories (non-blocking)
+        if: always()
+        continue-on-error: true
+        run: |
+          echo "Dev-dependency advisories (informational, does not block):"
+          npm audit --audit-level=high --registry=https://registry.npmjs.org || true
+
+  # ---------------------------------------------------------------------------
+  # 2. Committed credentials
+  # ---------------------------------------------------------------------------
+  secret-scan:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    steps:
+
+      - uses: actions/checkout@v4
+        with:
+          # TruffleHog diffs commit ranges, so it needs full history.
+          fetch-depth: 0
+
+      - name: Scan for verified leaked credentials
+        uses: trufflesecurity/trufflehog@main
+        with:
+          base: ${{ github.event.pull_request.base.sha || '' }}
+          head: ${{ github.event.pull_request.head.sha || github.sha }}
+          # --only-verified means "the credential was confirmed live", which
+          # keeps this gate free of noise and safe to make blocking.
+          extra_args: --only-verified --fail
+
+  # ---------------------------------------------------------------------------
+  # 3. Static analysis (SAST)
+  # ---------------------------------------------------------------------------
+  sast:
+    name: Static analysis
+    runs-on: ubuntu-latest
+    container:
+      image: semgrep/semgrep
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Semgrep scan
+        run: |
+          semgrep scan \
+            --config=p/typescript \
+            --config=p/react \
+            --config=p/secrets \
+            --config=p/owasp-top-ten \
+            --error \
+            --metrics=off \
+            --skip-unknown-extensions
+
+  # ---------------------------------------------------------------------------
+  # 4. Project-specific security policy (RLS, service-role keys, unsafe DOM)
+  # ---------------------------------------------------------------------------
+  policy-check:
+    name: Security policy check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Run repository security policy checks
+        run: node scripts/security-check.mjs
+
+  # ---------------------------------------------------------------------------
+  # 5. Correctness gates: broken code is also a security risk
+  # ---------------------------------------------------------------------------
+  quality-gate:
+    name: Lint, types, tests, build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Needed to diff against the base branch below.
+          fetch-depth: 0
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - run: bun install --frozen-lockfile
+
+      # The existing codebase carries pre-existing lint errors, so linting the
+      # whole repo would fail every pull request and make the gate meaningless.
+      # Instead this blocks on files the pull request actually touches, which
+      # stops new problems without demanding an unrelated cleanup first.
+      - name: Lint changed files
+        if: github.event_name == 'pull_request'
+        run: |
+          git fetch --no-tags origin "${{ github.base_ref }}"
+          FILES=$(git diff --name-only --diff-filter=ACMR \
+            "origin/${{ github.base_ref }}...HEAD" \
+            -- '*.ts' '*.tsx' '*.js' '*.jsx' '*.mjs' | tr '\n' ' ')
+
+          if [ -z "$FILES" ]; then
+            echo "No JavaScript or TypeScript files changed."
+            exit 0
+          fi
+
+          echo "Linting: $FILES"
+          # shellcheck disable=SC2086 # word splitting is intended: $FILES is a list of paths
+          bunx eslint --max-warnings=0 $FILES
+
+
+      - name: Full-repo lint (informational)
+        continue-on-error: true
+        run: bun run lint
+
+      - name: Typecheck
+        run: bunx tsc --noEmit -p tsconfig.app.json
+
+      - name: Tests
+        run: bun run test
+
+      - name: Build
+        run: bun run build
+
+
+  # ---------------------------------------------------------------------------
+  # 6. Single aggregated status check to require in branch protection
+  # ---------------------------------------------------------------------------
+  security-gate:
+    name: Security gate
+    runs-on: ubuntu-latest
+    if: always()
+    needs:
+      - dependency-audit
+      - secret-scan
+      - sast
+      - policy-check
+      - quality-gate
+    steps:
+      - name: Fail if any security job did not pass
+        run: |
+          cat <<'RESULTS'
+          dependency-audit : ${{ needs.dependency-audit.result }}
+          secret-scan      : ${{ needs.secret-scan.result }}
+          sast             : ${{ needs.sast.result }}
+          policy-check     : ${{ needs.policy-check.result }}
+          quality-gate     : ${{ needs.quality-gate.result }}
+          RESULTS
+
+          if [ "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}" = "true" ]; then
+            echo "::error::Security gate failed. This pull request introduces a risky change."
+            exit 1
+          fi
+
+          echo "All security checks passed."
