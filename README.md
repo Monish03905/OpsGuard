@@ -8,8 +8,13 @@ The project requires Node.js and npm.
 
 ```sh
 npm install
+npm run build
 npm run dev
 ```
+
+Copy `.env.example` to `.env` and set the Supabase URL and publishable key before starting the app.
+
+Vercel deployments use `vercel.json` for SPA route fallback. Configure the same two `VITE_` variables as project environment variables. The GitHub Actions pipeline also validates pull requests and main-branch pushes; add them as repository variables named `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`.
 
 ## Available scripts
 

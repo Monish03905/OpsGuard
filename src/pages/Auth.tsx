@@ -24,14 +24,24 @@ const Auth = () => {
     try {
       if (isLogin) {
         await signIn(email, password);
+        navigate("/");
       } else {
-        await signUp(email, password, displayName);
+        const requiresEmailConfirmation = await signUp(email, password, displayName);
+        if (requiresEmailConfirmation) {
+          toast({
+            title: "Check your email",
+            description: "Confirm your email address before signing in.",
+          });
+          setIsLogin(true);
+          return;
+        }
+        navigate("/");
       }
-      navigate("/");
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Authentication failed. Please try again.";
       toast({
         title: "Error",
-        description: error.message,
+        description: message,
         variant: "destructive",
       });
     } finally {
