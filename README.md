@@ -1,112 +1,151 @@
-# 🛡️ OpsGuard
+# OpsGuard
 
 ### Real-Time Incident Response & Operations Control Platform
 
 > **Observe. Respond. Resolve.**
 
-OpsGuard is a modern operations control platform designed to bring **service monitoring, incident management, SLA tracking, and operational workflows** into a single interface.
+OpsGuard brings service monitoring, incident and ticket management, SLA tracking, on-call teams, runbooks and an audit trail into one operations console. It is a full-stack React application backed by Supabase (Postgres + Auth + row-level security), with a test suite, a security check, CI workflows and a Vercel deployment.
 
-Built with **React, TypeScript, Supabase, PostgreSQL, Vite, Tailwind CSS, automated testing, security validation, GitHub Actions, and Vercel**, OpsGuard demonstrates how a production-oriented full-stack application can be designed around reliability, security, and operational visibility.
-
----
-
-<p align="center">
-
-[![Live Demo](https://img.shields.io/badge/Live-Demo-success?style=for-the-badge&logo=vercel)](https://opsguard-j7ygzrnec-monish3905.vercel.app/)
-[![GitHub](https://img.shields.io/badge/GitHub-Repository-black?style=for-the-badge&logo=github)](https://github.com/Monish03905/OpsGuard)
-[![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Vite](https://img.shields.io/badge/Vite-5-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
-[![Supabase](https://img.shields.io/badge/Supabase-Backend-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
-[![Vercel](https://img.shields.io/badge/Vercel-Deployed-black?style=for-the-badge&logo=vercel)](https://vercel.com/)
-
-</p>
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Open-success?style=for-the-badge&logo=vercel)](https://opsguard-j7ygzrnec-monish3905.vercel.app/)
+[![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)](#stack)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](#stack)
+[![Supabase](https://img.shields.io/badge/Supabase-Postgres%20%2B%20Auth-3ECF8E?logo=supabase&logoColor=white)](#stack)
+[![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite&logoColor=white)](#stack)
+[![Vitest](https://img.shields.io/badge/tests-Vitest-6E9F18?logo=vitest&logoColor=white)](#scripts)
 
 ---
 
-## 🚀 Live Application
+## Screens
 
-### 🌐 [Launch OpsGuard](https://opsguard-j7ygzrnec-monish3905.vercel.app/)
+| Dashboard | Monitoring |
+| --- | --- |
+| ![Operations dashboard](docs/screenshots/dashboard.png.png) | ![Monitoring](docs/screenshots/monitoring.png.png) |
 
-Experience the deployed application and explore the operations dashboard, monitoring views, SLA tracking, and incident workflows.
-
----
-
-# 🎯 Why OpsGuard?
-
-Modern engineering teams need more than isolated monitoring dashboards.
-
-When a service experiences an issue, teams need to:
-
-**Detect → Investigate → Prioritize → Respond → Track → Resolve**
-
-OpsGuard brings these operational activities together into a unified control platform.
-
-Instead of switching between multiple systems, teams can use a centralized interface to understand operational health and manage incidents.
+| Incidents & tickets | SLA tracking |
+| --- | --- |
+| ![Incident tickets](docs/screenshots/incident-tickets.png.png) | ![SLA uptime](docs/screenshots/sla-uptime.png.png) |
 
 ---
 
-# ✨ Core Capabilities
+## What it does
 
-## 📊 Operations Control Dashboard
+- **Operations dashboard** — service health, operational metrics, live incident feed, SLA compliance, on-call rotation and recent activity in one view.
+- **Monitoring** — service and resource status with CPU/memory visualization and an uptime chart.
+- **Incidents & tickets** — create, classify by priority, investigate, track and close; search, filter and export to CSV.
+- **SLA tracking** — targets, compliance widgets and historical uptime.
+- **Status updates** — a running feed of service status communications.
+- **Teams & on-call** — team membership and current responders.
+- **Runbooks** — step-by-step operational procedures attached to response work.
+- **Audit trail** — an append-only record of operational actions.
+- **Alerts, logs and global search** — a notification dropdown, log tracking, and a `Ctrl/⌘+K` command palette plus keyboard shortcuts.
+- **Accounts and roles** — Supabase auth, protected routes, profile settings, and role checks enforced in the database.
 
-A centralized overview of operational activity.
+## Stack
 
-- Service health visibility
-- Operational metrics
-- Incident overview
-- SLA-related information
-- High-level system status
-- Fast access to operational workflows
+| Layer | Choice |
+| --- | --- |
+| Front end | React 18 + TypeScript + Vite 5 |
+| UI | Tailwind CSS, shadcn/ui (Radix), framer-motion, Recharts, lucide |
+| Auth & data | Supabase (Postgres, Auth, RLS) |
+| Routing & state | React Router 6, TanStack Query, React Hook Form + Zod |
+| Tests | Vitest + Testing Library |
+| CI/CD | GitHub Actions (`ci.yml`, `security.yml`) |
+| Hosting | Vercel (`vercel.json`) |
 
----
+## Quick start
 
-## 🔍 Monitoring Dashboard
+### 1. Install
 
-Monitor infrastructure and service-level information through a dedicated monitoring interface.
+```bash
+npm install
+```
 
-- Service health indicators
-- Resource monitoring
-- CPU and memory visualization
-- Operational status
-- Historical metric visualization
+### 2. Configure Supabase
 
-Built using interactive data visualization components to make operational information easier to understand.
+```bash
+cp .env.example .env
+```
 
----
+```env
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=your-anon-key
+```
 
-## 🚨 Incident Management
+### 3. Apply the schema
 
-OpsGuard provides a structured workflow for handling operational incidents.
+The migrations in `supabase/migrations/` create the tables, RLS policies and role helpers:
 
-- Create and track incidents
-- Incident status management
-- Priority classification
-- Incident investigation workflow
-- Search and filtering
-- Operational tracking
+```bash
+supabase link --project-ref <your-project-ref>
+supabase db push
+```
 
-The goal is to turn an unexpected failure into a structured response process.
+Or run the SQL files in order in the Supabase SQL editor.
 
----
+### 4. Run
 
-## 🎫 Ticket Management
+```bash
+npm run dev      # Vite dev server
+```
 
-Organize operational issues through a dedicated ticket workflow.
+## Scripts
 
-Tickets can be searched, filtered, categorized, and tracked throughout their lifecycle.
+| Command | What it does |
+| --- | --- |
+| `npm run dev` | Start the dev server |
+| `npm run build` | Production build |
+| `npm run preview` | Serve the build locally |
+| `npm test` | Vitest test suite |
+| `npm run test:watch` | Vitest in watch mode |
+| `npm run lint` | ESLint |
+| `npm run security` | Custom security checks (`scripts/security-check.mjs`) |
 
-Typical workflow:
+## Routes
+
+| Route | Page |
+| --- | --- |
+| `/` | Operations control dashboard |
+| `/monitoring` | Service & resource monitoring |
+| `/tickets` | Incidents and tickets |
+| `/sla` | SLA tracking |
+| `/teams` | Team management / on-call |
+| `/runbooks` | Operational runbooks |
+| `/alerts` | Alert system |
+| `/logs` | Log tracking |
+| `/status` | Status updates |
+| `/audit` | Audit trail |
+| `/profile` | Profile settings |
+| `/auth` | Sign in / sign up |
+
+## Data model
+
+The migrations create these tables (all under RLS):
+
+`profiles`, `user_roles`, `incidents`, `tickets`, `logs`, `status_updates`, `teams`, `team_members`, `sla_targets`, `sla_history`, `runbooks`, `audit_logs`, `notifications`.
+
+## Project structure
 
 ```text
-Issue Detected
-      ↓
-Incident Created
-      ↓
-Priority Assigned
-      ↓
-Investigation
-      ↓
-Resolution
-      ↓
-Closed
+src/
+  pages/            One page per route (dashboard, monitoring, tickets, SLA, …)
+  components/       IncidentFeed, SlaUptimeChart, TeamOnCallWidget, CommandPalette, …
+  components/ui/    shadcn/ui primitives
+  contexts/         AuthContext
+  hooks/            Navigation shortcuts, toasts, mobile helpers
+  lib/              CSV export and utilities
+  test/             Vitest setup + example test
+supabase/migrations SQL schema, policies and functions
+docs/screenshots/   Application screenshots
+scripts/            security-check.mjs
+.github/workflows/  CI and security pipelines
+```
+
+## Security
+
+- Every table has row-level security; users can only read and write what their role allows.
+- `SECURITY.md` documents the policy model and reporting process.
+- `npm run security` plus the `security.yml` workflow check dependencies and client-side secrets on every push.
+
+## License
+
+No open-source license file is included; the code is published for portfolio review.
