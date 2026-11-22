@@ -6,7 +6,6 @@
 
 OpsGuard brings service monitoring, incident and ticket management, SLA tracking, on-call teams, runbooks and an audit trail into one operations console. It is a full-stack React application backed by Supabase (Postgres + Auth + row-level security), with a test suite, a security check, CI workflows and a Vercel deployment.
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-Open-success?style=for-the-badge&logo=vercel)](https://opsguard-j7ygzrnec-monish3905.vercel.app/)
 [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)](#stack)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](#stack)
 [![Supabase](https://img.shields.io/badge/Supabase-Postgres%20%2B%20Auth-3ECF8E?logo=supabase&logoColor=white)](#stack)
